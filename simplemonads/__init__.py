@@ -44,7 +44,7 @@ class Success(Monad):
         try:
             return Success(fn(self._value))
         except Exception as ex:
-            return Failure('Error: ' + str(ex)
+            return Failure('Error: ' + str(ex))
  
 class List(Monad):
     def bind(self, fn):
