@@ -1,4 +1,4 @@
-''Easy to use monads (containers) that improve the quality of your python code.'''
+'''Easy to use monads (containers) that improve the quality of your python code.'''
 
 class Monad:
     '''The base monad and implementation of the bind notation along with shortcuts (+) for binding, and (|) for matching.'''
