@@ -27,6 +27,6 @@ jobs:
         POETRY_HTTP_BASIC_PYPI_USERNAME: ${{ secrets.POETRY_HTTP_BASIC_PYPI_USERNAME }}
         POETRY_HTTP_BASIC_PYPI_PASSWORD: ${{ secrets.POETRY_HTTP_BASIC_PYPI_PASSWORD }}
       run: |
-        pytest
+        python -m pytest
         poetry build
         poetry publish
