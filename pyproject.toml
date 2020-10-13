@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "simplemonads"
-version = "1.0.1"
+version = "1.0.2"
 description = "Simple Monads for Python. Use Just to end checking for None, Success to end unhandled exceptions, and Reader for dependency injection at runtime."
 authors = ["Stephen Daves"]
 license = "UNLICENSE"
