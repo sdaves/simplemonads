@@ -37,6 +37,9 @@ def main():
                 self.gui = Printer()
 
     app() + GuiDeps # run with gui dependencies
-    
+
+def test_app():
+    assert type(app()) is Reader
+
 if __name__ == '__main__':
     main()
