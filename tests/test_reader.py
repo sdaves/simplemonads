@@ -17,7 +17,7 @@ def app():
     def show(deps: AppDeps):
         return result | {
             Success:lambda x: x | {
-                Just:lambda val: deps.gui.Popup(f'Answer to the Universe: {val}')
+                Just:lambda val: deps.gui.Popup('Answer to the Universe: ' + str(val))
             },
             Failure:lambda x: deps.gui.Popup('Whoops, an error happened', x)
         } is result or result
