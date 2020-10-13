@@ -14,7 +14,7 @@ class Monad:
         keys = list(items.keys())
         locate = type(self)
         if not items:
-            print(f'DEBUG: {self._value}')
+            print('DEBUG: ' + str(self._value))
         if locate in keys:
             return items[locate](self._value)
         if _ in keys:
@@ -30,7 +30,7 @@ class Monad:
         return self.bind(fn)
         
     def __str__(self):
-        return str(f'{type(self)}: {self._value}')
+        return str(type(self)) + ' ' + str(self._value)
  
 class _(Monad):
     pass
@@ -44,7 +44,7 @@ class Success(Monad):
         try:
             return Success(fn(self._value))
         except Exception as ex:
-            return Failure(f'error: {ex}')
+            return Failure('Error: ' + str(ex)
  
 class List(Monad):
     def bind(self, fn):
