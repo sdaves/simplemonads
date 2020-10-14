@@ -23,7 +23,8 @@ def app():
         } is result or result
     
     return Reader(show)
- 
+
+@run 
 def main():        
     app() + AppDeps # run with default dependencies
 
@@ -41,6 +42,3 @@ def main():
 def test_app():
     assert type(app()) is Reader
     assert 42 == app() + AppDeps | { Success: lambda x: x | { Just: lambda x: x }} 
-
-if __name__ == '__main__':
-    main()
