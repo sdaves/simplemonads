@@ -67,3 +67,7 @@ class Printer(Monad):
     def __getattr__(self, name):
         return print
     
+def run(fn):
+    import inspect
+    if inspect.getmodule(inspect.stack()[1][0]).__name__ == '__main__':
+        fn()
