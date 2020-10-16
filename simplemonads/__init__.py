@@ -69,5 +69,5 @@ class Printer(Monad):
     
 def run(fn):
     import inspect
-    if inspect.getmodule(inspect.stack()[1][0]).__name__ == '__main__':
+    if inspect.getmodule(fn.__module__).__name__ in ['__main__', 'builtins']:
         fn()
