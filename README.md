@@ -1,6 +1,6 @@
 # simplemonads
 
-Simple Monads for Python. Use Just to end checking for None, Success to end unhandled exceptions, and Reader for dependency injection at runtime.
+Simple Monads for Python. Use Just to end checking for None, Success to end unhandled exceptions, and Reader for dependency injection.
 
 ![Screenshot of test_reader.py](https://imgur.com/ZnAwyVc.png)
 
