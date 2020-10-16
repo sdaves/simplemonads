@@ -2,9 +2,9 @@
 
 Simple Monads for Python. Use Just to end checking for None, Success to end unhandled exceptions, and Reader for dependency injection.
 
-## Support
+## Platform support
 
-Works across all platforms on CPython >= 3.5, [in browser with Brython](https://raw.githack.com/sdaves/simplemonads/main/tests/test_brython.html), and even on microcontrollers with micropython.
+Works across all platforms on CPython >= 3.5, [in browser with Brython](https://raw.githack.com/sdaves/simplemonads/main/tests/test_brython_standalone.html), and even on microcontrollers with micropython!
 
 ![Screenshot of test_reader.py](https://imgur.com/ZnAwyVc.png)
 
