@@ -68,6 +68,8 @@ class Printer(Monad):
         return print
     
 def run(fn):
+    '''If your module is the `__main__` module the function you decorate will be ran by this decorator.'''
     import inspect
-    if inspect.getmodule(fn.__module__).__name__ in ['__main__', 'builtins']:
+    mod = inspect.getmodule(fn.__module__)
+    if fn.__module__ == '__main__' or mod and mod.__name__ in ['__main__', 'builtins']:
         fn()
