@@ -4,6 +4,8 @@ version = "1.0.4"
 description = "Simple Monads for Python. Use Just to end checking for None, Success to end unhandled exceptions, and Reader for dependency injection."
 authors = ["Stephen Daves"]
 license = "UNLICENSE"
+readme = "README.md"
+repository = "https://github.com/sdaves/simplemonads"
 
 [tool.poetry.dependencies]
 python = "^3.5"
