@@ -64,20 +64,22 @@ This will result in safely handling the divide by zero exception and will run th
             Failure:lambda x: deps.gui.Popup('Whoops, an error happened: ' + x)
 ```
 
-## Sample using `Future`
+## Example monad `Future`
 
 ```python
-from simplemonads import Future, run, _
-import asyncio
+from simplemonads import Future
 
 async def effect(data=1):
-    await asyncio.sleep(1)
+    import asyncio
+    await asyncio.sleep(0.1)
     return data ** data
 
-@run
-def main():
-    return Future(2) + effect + effect
+assert Future(2) | { Future: lambda x: x } == 2
 
-def test_future_value():
-    assert main() | { _: lambda x: x } == 256
+assert Future(2) + effect | { Future: lambda x: x } == 4
+
+assert Future(2) + effect + effect | { Future: lambda x: x } == 256
+
 ```
+
+This allows easily adding async functions into the monadic pipeline. If you need special concurrency options, you can await multiple tasks from inside the effect function.
