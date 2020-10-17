@@ -85,3 +85,4 @@ def run(fn):
     mod = inspect.getmodule(fn.__module__)
     if fn.__module__ == '__main__' or mod and mod.__name__ in ['__main__', 'builtins']:
         fn()
+    return fn
