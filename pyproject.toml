@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "simplemonads"
-version = "1.0.6"
+version = "1.0.7"
 description = "Easy to use monads (containers) that improve the quality of your python code. Use Just to end checking for None, Success to end unhandled exceptions, Future for async, and Reader for dependencies."
 authors = ["Stephen Daves"]
 license = "UNLICENSE"
