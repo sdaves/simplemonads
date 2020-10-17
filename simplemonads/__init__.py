@@ -1,5 +1,7 @@
 '''Easy to use monads (containers) that improve the quality of your python code.'''
 
+import asyncio
+
 class Monad:
     '''The base monad and implementation of the bind notation along with shortcuts (+) for binding, and (|) for matching.'''
     def __init__(self, value=None):
@@ -67,6 +69,16 @@ class Printer(Monad):
     def __getattr__(self, name):
         return print
     
+class Future(Monad):
+    def __init__(self, value=None, loop=asyncio.get_event_loop()):
+        self._value = value
+        self._loop = loop
+        super().__init__(value)     
+    
+    def bind(self, fn):
+        result = self._loop.run_until_complete(asyncio.gather(fn(self._value)))
+        return Future(result[0], self._loop)
+        
 def run(fn):
     '''If your module is the `__main__` module the function you decorate will be ran by this decorator.'''
     import inspect
