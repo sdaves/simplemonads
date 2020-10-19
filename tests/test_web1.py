@@ -1,5 +1,5 @@
-from test_reader import app, run, Printer
-
+import simplemonads as sm
+from test_reader import app
 
 def produce_dict(*_):
     item = dict()
@@ -12,7 +12,7 @@ class Web:
         try:
             browser = __import__("browser")
         except:
-            browser = Printer()
+            browser = sm.Printer()
 
         tpl = '<button v-on:click="count++">' + x + " - {{ count }} times.</button>"
         browser.window.Vue.component(
@@ -22,6 +22,6 @@ class Web:
         browser.window.Vue.new({"el": ".web1"})
 
 
-@run
+@sm.run
 def main():
     return app() + Web

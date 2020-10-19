@@ -1,5 +1,6 @@
 import simplemonads as sm
 
+
 try:
     from typing import Callable, Protocol, Union, Any
 
