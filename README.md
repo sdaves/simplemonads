@@ -74,13 +74,13 @@ def main():
 To demonstrate exception handling the above example can be changed to:
 
 ```python
-    return app(True) + make(
+    return app() + make(lambda: gui)
 ```
 
 This will result in safely handling the divide by zero exception and will run the following without interrupting the flow of the application:
 
 ```python
-            Failure: lambda x: deps.popup(err + x),
+            sm.Failure: lambda x: deps.popup(err + x),
 ```
 
 ## Example monad `Future`
