@@ -2,7 +2,7 @@
 
 
 try:
-    from typing import Callable, Protocol, Union
+    from typing import Callable, Protocol, Union, Any
 
     class Monad(Protocol):
         "The base protocol that other Monads implement."
@@ -10,8 +10,14 @@ try:
         def bind(self, fn: "Callable") -> "Monad":
             "Perform the monadic action on the argument."
 
+        def __add__(self, fn: "Callable") -> "Any":
+            "Shortcut for `match`"
+
         def match(self, items: dict) -> "Monad":
             "Pattern match the `items` dictionary with `self._value` and return a monad."
+
+        def __or__(self, items:dict) -> "Any":
+            "Shortcut for `match`"
 
 
 except:
@@ -25,7 +31,13 @@ class Printer:
     def bind(self, fn: "Callable") -> "Printer":
         return Printer(fn(self._value))
 
+    def __add__(self, fn: "Callable") -> "Printer":
+        return self.bind(fn)
+
     def match(self, items: dict) -> "Printer":
+        return Printer(self._value)
+
+    def __or__(self, items: dict) -> "Printer":
         return Printer(self._value)
 
     def __getattr__(self, name: str):
