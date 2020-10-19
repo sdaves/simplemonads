@@ -83,7 +83,7 @@ class Success(BaseMonad):
 
 
 class List(BaseMonad):
-    _value: list
+    _value: "list"
 
     def bind(self, fn: "Callable") -> "List":
         return List(list(map(fn, self._value)))
