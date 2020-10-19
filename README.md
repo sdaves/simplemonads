@@ -1,10 +1,10 @@
-# simplemonads
+# [simplemonads](https://sdaves.github.io/simplemonads/)
 
 Easy to use monads (containers) that improve the quality of your python code. Use `Just` to end checking for None, `Success` to end unhandled exceptions, `Future` for async, and `Reader` for dependencies.
 
 ## Platform support
 
-Just `pip install simplemonads` and you're done. You can also copy the single file `simplemonads/__init__.py` into your project and use it as you wish without dependencies. Works across all platforms, so CPython >= 3.5 (Windows, Linux, Mac, Android, iOS), [in browser with Brython](https://raw.githack.com/sdaves/simplemonads/main/tests/test_brython_standalone.html), and [even on microcontrollers with micropython](https://micropython.org)!
+Just `pip install simplemonads` and you're done. You can also copy the single file `simplemonads/__init__.py` into your project and use it as you wish without dependencies. Works across all platforms, so CPython >= 3.5 (Windows, Linux, Mac, Android, iOS), in a [single standalone html](https://sdaves.github.io/simplemonads/tests/test_brython_standalone.html) file, multiple files in the browser with [dynamic loading](https://sdaves.github.io/simplemonads/tests/index.html), and [even on microcontrollers with micropython](https://micropython.org)!
 
 ![Screenshot of test_reader.py](https://imgur.com/ZnAwyVc.png)
 
