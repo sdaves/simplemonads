@@ -74,7 +74,7 @@ def main():
 To demonstrate exception handling the above example can be changed to:
 
 ```python
-    return app() + make(lambda: gui)
+    return app(divide_by_zero=True) + make(lambda: gui)
 ```
 
 This will result in safely handling the divide by zero exception and will run the following without interrupting the flow of the application:
