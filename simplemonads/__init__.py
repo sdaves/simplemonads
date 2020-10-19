@@ -1,88 +1,135 @@
-'''Easy to use monads (containers) that improve the quality of your python code.'''
+"Easy to use monads (containers) that improve the quality of your python code."
 
-import asyncio
 
-class Monad:
-    '''The base monad and implementation of the bind notation along with shortcuts (+) for binding, and (|) for matching.'''
+try:
+    from typing import Callable, Protocol, Union
+
+    class Monad(Protocol):
+        "The base protocol that other Monads implement."
+
+        def bind(self, fn: "Callable") -> "Monad":
+            "Perform the monadic action on the argument."
+
+        def match(self, items: dict) -> "Monad":
+            "Pattern match the `items` dictionary with `self._value` and return a monad."
+
+
+except:
+    pass
+
+
+class Printer:
     def __init__(self, value=None):
         self._value = value
-        
-    def bind(self, fn):
-        '''Bind lifts the value from self._value into the function argument according to the laws of this monad.'''
+
+    def bind(self, fn: "Callable") -> "Printer":
+        return Printer(fn(self._value))
+
+    def match(self, items: dict) -> "Printer":
+        return Printer(self._value)
+
+    def __getattr__(self, name: str):
+        return print
+
+
+class BaseMonad:
+    def __init__(self, value=None):
+        self._value = value
+
+    def bind(self, fn: "Callable") -> "Monad":
+        "Bind lifts the value from self._value into the function argument according to the laws of this monad."
         return self
- 
-    def match(self, items={}):
-        '''Pattern match the `items` dictionary with `self._value` and return a monad.'''
+
+    def match(self, items={}) -> "Monad":
+        "Pattern match the `items` dictionary with `self._value` and return a monad."
         keys = list(items.keys())
         locate = type(self)
         if not items:
-            print('DEBUG: ' + str(self._value))
+            print("DEBUG: " + str(self._value))
         if locate in keys:
             return items[locate](self._value)
         if _ in keys:
             return items[_](self._value)
         return self
- 
-    def __or__(self, items={}):
-        '''Calls `match` class method.'''
+
+    def __or__(self, items={}) -> "Monad":
+        "Calls `match` class method."
         return self.match(items)
-        
-    def __add__(self, fn):
-        '''Calls `bind` class method.'''
+
+    def __add__(self, fn: "Callable") -> "Monad":
+        "Calls `bind` class method."
         return self.bind(fn)
-        
+
     def __str__(self):
-        return str(type(self)) + ' ' + str(self._value)
- 
-class _(Monad):
+        return str(type(self)) + " " + str(self._value)
+
+
+class _(BaseMonad):
     pass
- 
-class Failure(Monad):
+
+
+class Failure(BaseMonad):
     pass
- 
-class Success(Monad):
-    '''Lift the value in self._value into the function argument and return a Success monad.'''
-    def bind(self, fn):
+
+
+class Success(BaseMonad):
+    "Lift the value in self._value into the function argument and return a Success monad."
+
+    def bind(self, fn: "Callable") -> "Union[Success, Failure]":
         try:
             return Success(fn(self._value))
         except Exception as ex:
-            return Failure('Error: ' + str(ex))
- 
-class List(Monad):
-    def bind(self, fn):
+            return Failure("Error: " + str(ex))
+
+
+class List(BaseMonad):
+    _value: list
+
+    def bind(self, fn: "Callable") -> "List":
         return List(list(map(fn, self._value)))
- 
-class Nothing(Monad):
-    def bind(self, fn):
+
+
+class Nothing(BaseMonad):
+    def bind(self, fn: "Callable") -> "Nothing":
         return Nothing()
-    
-class Just(Monad):
-    def bind(self, fn):
-        return Just(fn(self._value))    
- 
-class Reader(Monad):
-    '''Inject dependencies into the self._value function when binding to the monad.'''
-    def bind(self, fn):
+
+
+class Just(BaseMonad):
+    def bind(self, fn: "Callable") -> "Just":
+        return Just(fn(self._value))
+
+
+class Reader(BaseMonad):
+    "Inject dependencies into the self._value function when binding to the monad."
+
+    _value: "Callable"
+
+    def bind(self, fn: "Callable") -> "Reader":
         return self._value(fn())
-        
-class Printer(Monad):
-    def __getattr__(self, name):
-        return print
-    
-class Future(Monad):
-    def __init__(self, value=None, loop=asyncio.get_event_loop()):
+
+
+class Future(BaseMonad):
+    def __init__(self, value=None, loop=None):
+        if not loop:
+            import asyncio
+
+            loop = asyncio.get_event_loop()
+
         self._value = value
         self._loop = loop
-        super().__init__(value)     
-    
-    def bind(self, fn):
+        super().__init__(value)
+
+    def bind(self, fn: "Callable") -> "Future":
+        import asyncio
+
         result = self._loop.run_until_complete(asyncio.gather(fn(self._value)))
         return Future(result[0], self._loop)
-        
-def run(fn):
-    '''If your module is the `__main__` module the function you decorate will be ran by this decorator.'''
-    import inspect
-    mod = inspect.getmodule(fn.__module__)
-    if fn.__module__ == '__main__' or mod and mod.__name__ in ['__main__', 'builtins']:
+
+
+def run(fn: "Callable") -> "Callable":
+    "If your module is the `__main__` module this decorator will run the decorated function."
+
+    if "__main__" in fn.__module__:
         fn()
+
     return fn
