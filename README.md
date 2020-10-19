@@ -12,7 +12,7 @@ Just `pip install simplemonads` and you're done. You can also copy the single fi
 ## Example using monads: `Success`, `Failure`, `Just`, `Reader`, and `Printer`
 
 ```python
-mport simplemonads as sm
+import simplemonads as sm
 
 try:
     from typing import Callable, Protocol, Union, Any
