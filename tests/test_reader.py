@@ -9,7 +9,6 @@ try:
         def popup(self, msg) -> None:
             "Display a popup with the specified message."
 
-
     import PySimpleGUI
 
 

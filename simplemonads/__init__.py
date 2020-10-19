@@ -16,7 +16,7 @@ try:
         def match(self, items: dict) -> "Monad":
             "Pattern match the `items` dictionary with `self._value` and return a monad."
 
-        def __or__(self, items:dict) -> "Any":
+        def __or__(self, items: dict) -> "Any":
             "Shortcut for `match`"
 
 
