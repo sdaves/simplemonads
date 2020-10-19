@@ -12,42 +12,66 @@ Just `pip install simplemonads` and you're done. You can also copy the single fi
 ## Example using monads: `Success`, `Failure`, `Just`, `Reader`, and `Printer`
 
 ```python
-from simplemonads import Success, Failure, Just, _, Reader, run, Printer
+from simplemonads import Failure, Just, Printer, Reader, Success, _, run
 
-class AppDeps:
-    def __init__(self, gui=Printer()):
-        self.gui = gui
-     
-def app(divide_by_zero=False):                      
-    data = Success(Just(7))     
+try:
+    from typing import Callable, Protocol, Union, Any
+
+    class Deps(Protocol):
+        "Dependencies for your application"
+
+        def popup(self, msg) -> None:
+            "Display a popup with the specified message."
+
+    import PySimpleGUI
+
+
+except:
+    pass
+
+
+def make(make_gui: "Callable[[],PySimpleGUI]") -> "Callable[[],Deps]":
+    gui = make_gui()
+
+    class GuiDeps:
+        def popup(self, x: str):
+            gui.Popup(x)
+
+        def __setattr__(self, name, value):
+            "Block attempts to change this class"
+
+    return GuiDeps
+
+
+def app(divide_by_zero: bool = False) -> Reader:
+    data = Success(Just(7))
     double = lambda x: x + (lambda y: y * 2)
     triple = lambda x: x + (lambda y: y * 3)
-    result = data + triple + double  
+    result = data + triple + double
 
     if divide_by_zero:
-        result += (lambda x: x + (lambda x: x / 0))
-    
-    def effect(deps: AppDeps):
-        return result | {
-            Success:lambda x: x | {
-                Just:lambda val: deps.gui.Popup('Answer to the Universe: ' + str(val))
-            },
-            Failure:lambda x: deps.gui.Popup('Whoops, an error happened: ' + x)
-        } is result or result
-    
+        result += lambda x: x + (lambda x: x / 0)
+
+    def effect(deps: "Deps") -> "Union[Success, Failure]":
+        msg = "Answer to the Universe: "
+        err = "Whoops, an error happened: "
+        result | {
+            Success: lambda x: x | {Just: lambda val: deps.popup(msg + str(val))},
+            Failure: lambda x: deps.popup(err + x),
+        }
+        return result
+
     return Reader(effect)
 
-class GuiAppDeps(AppDeps):
-    def __init__(self, gui=Printer()):
-        try:
-            import PySimpleGUI
-            self.gui = PySimpleGUI                        
-        except:
-            self.gui = gui
-  
-@run 
-def main():        
-    return app() + GuiAppDeps 
+
+@run
+def main():
+    "If PySimpleGUI is available run the app with the gui, else print to console"
+    
+    return app() + make(
+        Success() + (lambda: __import__("PySimpleGUI"))
+        | {Success: lambda x: x, Failure: lambda x: Printer}
+    )
 ```
 
 ## Handling exceptions
@@ -55,13 +79,13 @@ def main():
 To demonstrate exception handling the above example can be changed to:
 
 ```python
-    return app(True) + GuiAppDeps
+    return app(True) + make(
 ```
 
 This will result in safely handling the divide by zero exception and will run the following without interrupting the flow of the application:
 
 ```python
-            Failure:lambda x: deps.gui.Popup('Whoops, an error happened: ' + x)
+            Failure: lambda x: deps.popup(err + x),
 ```
 
 ## Example monad `Future`
