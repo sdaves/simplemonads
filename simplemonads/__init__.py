@@ -102,8 +102,6 @@ class Just(BaseMonad):
 class Reader(BaseMonad):
     "Inject dependencies into the self._value function when binding to the monad."
 
-    _value: "Callable"
-
     def bind(self, fn: "Callable") -> "Reader":
         return self._value(fn())
 
