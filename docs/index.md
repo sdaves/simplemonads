@@ -88,3 +88,15 @@ def main(make_mailer=lambda: sm.Printer()):
 ```
 
 This allows injecting new make_reader functions into the main function, rather than the dummy Printer that just prints stuff to the console, and these can be specified by another file that does all the import wizardry. With these techniques it is possible to follow clean architecture guidelines and not have implementation details in your business logic code.
+
+## `run` decorator
+
+This allows skipping adding `if __name__ == '__main__': main()` in you files and makes it easier to define the intent of your program without the boilerplate.
+
+```python
+from simplemonads import run
+
+@run
+def main():
+    print('I will be called when this script is directly ran, but wait for `main()` to be called if I am imported.')
+```
