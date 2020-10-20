@@ -83,8 +83,8 @@ def app():
     return sm.Reader(effect)
 
 @sm.run
-def main(make_reader=lambda: sm.Printer()):
-    return app() + make(make_reader)
+def main(make_mailer=lambda: sm.Printer()):
+    return app() + make(make_mailer)
 ```
 
 This allows injecting new make_reader functions into the main function, rather than the dummy Printer that just prints stuff to the console, and these can be specified by another file that does all the import wizardry. With these techniques it is possible to follow clean architecture guidelines and not have implementation details in your business logic code.
