@@ -2,19 +2,17 @@
 
 Lets make monads easy, fun, and productive.
 
-## Pattern matching
+## Just, Nothing, Pattern matching
 
-Being able to pipe a monad into a dictionary makes it easy to filter values, and without the need for more keywords in the language! If you don't like the pipe syntax you can use the match method instead. The library includes the  `_` monad that allows matching unknown monads in the dictionary. Yes I do hope Guido merges his pattern matching into Python 3 mainline, but I'm not holding my breath anymore ...
+Using Just means you get to pattern match against the monad and remove all None (Nothing monad) instances. This removes the need to check values for None, or should I say it removes the forgetting of checking the values for None?
+
+Being able to pipe a monad into a dictionary makes it easy to filter values, and without the need for more keywords in the language! If you don't like the pipe syntax `|` you can use the match method instead. The library includes the  `_` monad that allows matching unknown monads in the dictionary. Yes I do hope Guido merges his pattern matching into Python 3 mainline, but I'm not holding my breath ...
 
 ```python
 import simplemonads as sm
 assert 1 == sm.Just(1).match({ sm._: lambda x: x })
 assert 'nada' == sm.Nothing() | { sm.Just: lambda x: 'found', sm._: lambda x: 'nada' }
 ```
-
-## Just, Nothing
-
-Using Just means you get to pattern match against the monad and remove all None (Nothing monad) instances. This removes the need to check values for None, or should I say it removes the forgetting of checking the values for None?
 
 ## Success, Failure 
 
@@ -39,6 +37,24 @@ async def doubler(x:int):
     return x * 2
     
 assert 84 == sm.Future(42) + doubler | { sm.Future: lambda x: x }
+```
+
+Async functions can also be chained together for multiple effects in a pipeline.
+
+```python
+from simplemonads import Future
+
+async def effect(data=1):
+    import asyncio
+    await asyncio.sleep(0.1)
+    return data ** data
+
+assert Future(2) | { Future: lambda x: x } == 2
+
+assert Future(2) + effect | { Future: lambda x: x } == 4
+
+assert Future(2) + effect + effect | { Future: lambda x: x } == 256
+
 ```
 
 ## Reader
