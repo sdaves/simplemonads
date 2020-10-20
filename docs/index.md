@@ -91,7 +91,7 @@ This allows injecting new make_reader functions into the main function, rather t
 
 ## `run` decorator
 
-This allows skipping adding `if __name__ == '__main__': main()` in you files and makes it easier to define the intent of your program without the boilerplate.
+This allows skipping adding `if __name__ == '__main__': main()` in your scripts, and makes it easier to define the intent of your program without the boilerplate.
 
 ```python
 from simplemonads import run
