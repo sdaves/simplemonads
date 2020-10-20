@@ -1,6 +1,6 @@
 # simplemonads
 
-Lets make monads easy, fun, and productive.
+Let's make monads easy, fun, and productive.
 
 ## Just, Nothing, Pattern matching
 
