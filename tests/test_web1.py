@@ -1,5 +1,5 @@
 import simplemonads as sm
-from test_reader import app
+from test_reader import TestReader
 
 
 def produce_dict(*_):
@@ -25,4 +25,4 @@ class Web:
 
 @sm.run
 def main():
-    return app() + Web
+    return TestReader.app() + Web

@@ -13,42 +13,48 @@ except:
     pass
 
 
-def make(create: "sm.Callable[[],sm.Any]") -> "sm.Callable[[],Deps]":
-    gui = create()
-
-    class GuiDeps:
-        def popup(self, x: str):
-            gui.Popup(x)
-
-    return GuiDeps
-
-
-def app(divide_by_zero: bool = False) -> sm.Reader:
-    data = sm.Success(sm.Just(7))
-    double = lambda x: x + (lambda y: y * 2)
-    triple = lambda x: x + (lambda y: y * 3)
-    result = data + triple + double
-
-    if divide_by_zero:
-        result += lambda x: x + (lambda x: x / 0)
-
-    def effect(deps: "Deps") -> "sm.Monad":
-        msg = "Answer to the Universe: "
-        err = "Whoops, an error happened: "
-        result | {
-            sm.Success: lambda x: x | {sm.Just: lambda val: deps.popup(msg + str(val))},
-            sm.Failure: lambda x: deps.popup(err + x),
-        }
-        return result
-
-    return sm.Reader(effect)
-
-
 @sm.run
-def main():
-    lib = sm.Success() + (lambda x: __import__("PySimpleGUI"))
-    gui = lib | {sm.Success: lambda x: x, sm.Failure: lambda x: sm.Printer()}
-    return app() + make(lambda: gui)
+class TestReader:
+    @classmethod
+    def make(cls, create: "sm.Callable[[],sm.Any]") -> "sm.Callable[[],Deps]":
+        gui = create()
+
+        class GuiDeps:
+            def popup(self, x: str):
+                gui.Popup(x)
+
+        return GuiDeps
+
+    @classmethod
+    def app(cls, divide_by_zero: bool = False) -> sm.Reader:
+        data = sm.Success(sm.Just(7))
+        double = lambda x: x + (lambda y: y * 2)
+        triple = lambda x: x + (lambda y: y * 3)
+        result = data + triple + double
+
+        if divide_by_zero:
+            result += lambda x: x + (lambda x: x / 0)
+
+        def effect(deps: "Deps") -> "sm.Monad":
+            msg = "Answer to the Universe: "
+            err = "Whoops, an error happened: "
+            result | {
+                sm.Success: lambda x: x
+                | {sm.Just: lambda val: deps.popup(msg + str(val))},
+                sm.Failure: lambda x: deps.popup(err + x),
+            }
+            return result
+
+        return sm.Reader(effect)
+
+    @classmethod
+    def main(cls):
+        gui = sm.Success() + (lambda x: __import__("PySimpleGUI")) | {
+            sm.Success: lambda x: x,
+            sm.Failure: lambda x: sm.Printer(),
+        }
+
+        return cls.app() + cls.make(lambda: gui)
 
 
 def equals(x, expected):
@@ -64,11 +70,13 @@ def err(x):
 
 
 def test_app_is_reader():
-    matches(type(app()), sm.Reader)
+    matches(type(TestReader.app()), sm.Reader)
 
 
 def test_app_contains_42():
-    assert 42 == (app() + make(sm.Printer)) | {sm._: lambda x: x | {sm._: lambda x: x}}
+    assert 42 == (TestReader.app() + TestReader.make(sm.Printer)) | {
+        sm._: lambda x: x | {sm._: lambda x: x}
+    }
 
 
 def test_app_calls_deps():
@@ -76,7 +84,7 @@ def test_app_calls_deps():
         def __getattr__(self, name):
             return lambda x: equals(x, "Answer to the Universe: 42")
 
-    app() + make(TestPrinter)
+    TestReader.app() + TestReader.make(TestPrinter)
 
 
 def test_just_with_none_returns_nothing():
@@ -100,7 +108,7 @@ def test_app_arguments_with_div_by_zero():
             msg = "Whoops, an error happened: Error: division by zero"
             return lambda x: equals(x, msg)
 
-    app(divide_by_zero=True) + make(TestPrinter)
+    TestReader.app(divide_by_zero=True) + TestReader.make(TestPrinter)
 
 
 def test_protocol():

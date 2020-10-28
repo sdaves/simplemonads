@@ -97,7 +97,9 @@ class Success(BaseMonad):
 
 
 class Lists(BaseMonad):
-    _value: "List[object]" = []
+    def __init__(self, value: "List[object]" = []):
+        self._value = value
+        super().__init__(value)
 
     def bind(self, fn: "Callable") -> "Monad":
         return Lists(list(map(fn, self._value)))
@@ -140,8 +142,10 @@ class Future(BaseMonad):
 
 def run(fn: "Callable") -> "Callable":
     "If your module is the `__main__` module this decorator will run the decorated function."
-
-    if "__main__" in fn.__module__:
-        fn()
+    if hasattr(fn, "__module__") and "__main__" in fn.__module__:
+        if isinstance(fn, type):
+            fn().main()
+        else:
+            fn()
 
     return fn
