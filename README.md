@@ -1,6 +1,6 @@
 # [simplemonads](https://sdaves.github.io/simplemonads/)
 
-Lets make monads easy, fun, and productive.
+Let's make monads easy, fun, and productive.
 
 ## Platform support
 
