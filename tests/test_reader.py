@@ -1,24 +1,20 @@
 import simplemonads as sm
 
-
 try:
-    from typing import Callable, Protocol, Union, Any
 
-    class Deps(Protocol):
+    class Deps(sm.Protocol):
         "Dependencies for your application"
 
-        def popup(self, msg) -> None:
+        def popup(self, msg: str) -> None:
             "Display a popup with the specified message."
-
-    import PySimpleGUI
 
 
 except:
     pass
 
 
-def make(make_gui: "Callable[[],PySimpleGUI]") -> "Callable[[],Deps]":
-    gui = make_gui()
+def make(create: "sm.Callable[[],sm.Any]") -> "sm.Callable[[],Deps]":
+    gui = create()
 
     class GuiDeps:
         def popup(self, x: str):
@@ -59,8 +55,16 @@ def equals(x, expected):
     assert x == expected
 
 
+def matches(x, expected):
+    assert x is expected
+
+
+def err(x):
+    raise Exception(x)
+
+
 def test_app_is_reader():
-    assert type(app()) is sm.Reader
+    matches(type(app()), sm.Reader)
 
 
 def test_app_contains_42():
@@ -75,6 +79,21 @@ def test_app_calls_deps():
     app() + make(TestPrinter)
 
 
+def test_just_with_none_returns_nothing():
+    sm.Just(None) + (lambda x: matches(x, sm.Nothing))
+
+
+def test_just_matched_with_none_matches_nothing():
+    sm.Just(None) | {
+        sm.Just: lambda x: equals("should not be Just", ""),
+        sm.Nothing: lambda x: matches("should be nothing", "should be nothing"),
+    }
+
+
+def test_success_with_error_returns_failure():
+    sm.Success() + (lambda x: err("fail")) + (lambda x: matches(x, sm.Failure))
+
+
 def test_app_arguments_with_div_by_zero():
     class TestPrinter:
         def __getattr__(self, name):
@@ -82,3 +101,19 @@ def test_app_arguments_with_div_by_zero():
             return lambda x: equals(x, msg)
 
     app(divide_by_zero=True) + make(TestPrinter)
+
+
+def test_protocol():
+    def ex(sut: "sm.Monad"):
+        assert sut is not None
+
+    ex(sm.Printer())
+    ex(sm.BaseMonad())
+    ex(sm._())
+    ex(sm.Success())
+    ex(sm.Failure())
+    ex(sm.Just())
+    ex(sm.Nothing())
+    ex(sm.Lists())
+    ex(sm.Reader())
+    ex(sm.Future())

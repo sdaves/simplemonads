@@ -2,7 +2,7 @@
 
 
 try:
-    from typing import Callable, Protocol, Union, Any
+    from typing import Callable, Protocol, Union, Any, List, TypeVar, Generic
 
     class Monad(Protocol):
         "The base protocol that other Monads implement."
@@ -10,10 +10,10 @@ try:
         def bind(self, fn: "Callable") -> "Monad":
             "Perform the monadic action on the argument."
 
-        def __add__(self, fn: "Callable") -> "Any":
-            "Shortcut for `match`"
+        def __add__(self, fn: "Callable") -> "Monad":
+            "Shortcut for `bind`"
 
-        def match(self, items: dict) -> "Monad":
+        def match(self, items: dict) -> "Any":
             "Pattern match the `items` dictionary with `self._value` and return a monad."
 
         def __or__(self, items: dict) -> "Any":
@@ -52,25 +52,27 @@ class BaseMonad:
         "Bind lifts the value from self._value into the function argument according to the laws of this monad."
         return self
 
-    def match(self, items={}) -> "Monad":
+    def __add__(self, fn: "Callable") -> "Monad":
+        "Calls `bind` class method."
+        return self.bind(fn)
+
+    def match(self, items={}) -> "Any":
         "Pattern match the `items` dictionary with `self._value` and return a monad."
         keys = list(items.keys())
         locate = type(self)
         if not items:
             print("DEBUG: " + str(self._value))
         if locate in keys:
+            if locate is Just and self._value is None:
+                return Nothing()
             return items[locate](self._value)
         if _ in keys:
             return items[_](self._value)
         return self
 
-    def __or__(self, items={}) -> "Monad":
+    def __or__(self, items={}) -> "Any":
         "Calls `match` class method."
         return self.match(items)
-
-    def __add__(self, fn: "Callable") -> "Monad":
-        "Calls `bind` class method."
-        return self.bind(fn)
 
     def __str__(self):
         return str(type(self)) + " " + str(self._value)
@@ -94,11 +96,11 @@ class Success(BaseMonad):
             return Failure("Error: " + str(ex))
 
 
-class List(BaseMonad):
-    _value = []
+class Lists(BaseMonad):
+    _value: "List[object]" = []
 
-    def bind(self, fn: "Callable") -> "List":
-        return List(list(map(fn, self._value)))
+    def bind(self, fn: "Callable") -> "Monad":
+        return Lists(list(map(fn, self._value)))
 
 
 class Nothing(BaseMonad):
@@ -107,8 +109,8 @@ class Nothing(BaseMonad):
 
 
 class Just(BaseMonad):
-    def bind(self, fn: "Callable") -> "Just":
-        return Just(fn(self._value))
+    def bind(self, fn: "Callable") -> "Union[Just,Nothing]":
+        return Nothing() if self._value is None else Just(fn(self._value))
 
 
 class Reader(BaseMonad):

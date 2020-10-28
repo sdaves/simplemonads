@@ -1,6 +1,7 @@
 import simplemonads as sm
 from test_reader import app
 
+
 def produce_dict(*_):
     item = dict()
     item["count"] = 0

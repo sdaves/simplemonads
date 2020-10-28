@@ -18,24 +18,20 @@ Just `pip install simplemonads` and you're done. You can also download [this sin
 import simplemonads as sm
 
 try:
-    from typing import Callable, Protocol, Union, Any
 
-    class Deps(Protocol):
+    class Deps(sm.Protocol):
         "Dependencies for your application"
 
-        def popup(self, msg) -> None:
+        def popup(self, msg: str) -> None:
             "Display a popup with the specified message."
-
-
-    import PySimpleGUI
 
 
 except:
     pass
 
 
-def make(make_gui: "Callable[[],PySimpleGUI]") -> "Callable[[],Deps]":
-    gui = make_gui()
+def make(create: "sm.Callable[[],sm.Any]") -> "sm.Callable[[],Deps]":
+    gui = create()
 
     class GuiDeps:
         def popup(self, x: str):
